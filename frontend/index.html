@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek X</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome" class="container welcome-container">
+        <div class="welcome-content">
+            <div class="welcome-header">
+                <h1>Welcome to DeepSeek X</h1>
+                <p class="welcome-subtitle">Intelligent Conversation Enhancement Platform</p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Dual Model Collaboration</h3>
+                    <p>Enhance AI conversation through the collaboration of inference and target models</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛠️</div>
+                    <h3>Flexible Configuration</h3>
+                    <p>Support multiple model configurations to meet different application scenarios</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>API Compatibility</h3>
+                    <p>Support OpenAI-compatible API format for easy integration with existing systems</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Response Enhancement</h3>
+                    <p>Optimize AI response quality for more accurate and comprehensive replies</p>
+                </div>
+            </div>
+            
+            <button onclick="showLogin()" class="enter-button">Enter</button>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login" class="container login-container" style="display: none;">
+        <div class="login-form">
+            <h2>System Login</h2>
+            <form onsubmit="event.preventDefault(); login();">
+                <input type="password" id="token" placeholder="Enter Token">
+                <button onclick="submit">Login</button>
+            </form>    
+        </div>
+    </div>
+      
+    <!-- Configuration Screen -->
+    <div id="config" class="container" style="display: none;">
+        <div class="config-tabs">
+            <div class="tab active" onclick="switchTab('composite')">Composite Models</div>
+            <div class="tab" onclick="switchTab('inference')">Inference Models</div>
+            <div class="tab" onclick="switchTab('target')">Target Models</div>
+            <div class="tab" onclick="switchTab('proxy')">Proxy Settings</div>
+            <div class="tab" onclick="switchTab('workflow')">Workflow Settings</div>
+            <div class="tab" onclick="switchTab('system')">System Settings</div>
+            <div class="action-buttons">
+                <button onclick="logout()" class="logout-btn" title="Logout">🚪</button>
+            </div>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="composite" class="tab-content active">
+            <div class="tab-header">
+                <h2>Composite Model Configuration</h2>
+                <button onclick="addModel('composite')" class="add-model-btn">Add Composite Model</button>
+            </div>
+            <div id="composite-models"></div>
+        </div>
+
+        <div id="inference" class="tab-content">
+            <div class="tab-header">
+                <h2>Inference Model Configuration</h2>
+                <button onclick="addModel('inference')" class="add-model-btn">Add Inference Model</button>
+            </div>
+            <div id="inference-models"></div>
+        </div>
+
+        <div id="target" class="tab-content">
+            <div class="tab-header">
+                <h2>Target Model Configuration</h2>
+                <button onclick="addModel('target')" class="add-model-btn">Add Target Model</button>
+            </div>
+            <div id="target-models"></div>
+        </div>
+
+        <div id="proxy" class="tab-content">
+            <div class="tab-header">
+                <h2>Proxy Server Configuration</h2>
+            </div>
+            <div class="form-section">
+                <div class="input-group">
+                    <label>Proxy Server Address:</label>
+                    <div class="proxy-input-wrapper">
+                        <div class="http-prefix">http://</div><input type="text" id="proxy-address" placeholder="Example: 127.0.0.1:8118">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="switch-label">Enable Proxy Server:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="proxy-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="workflow" class="tab-content">
+            <div class="tab-header">
+                <h2>Workflow Settings</h2>
+            </div>
+            <div class="workflow-section">
+                <h3>Inference Phase</h3>
+                <div id="inference-steps" class="steps-container"></div>
+                <button class="add-step-btn" onclick="addInferenceStep()">Add Step</button>
+            </div>
+            <div class="workflow-section">
+                <h3>Final Phase</h3>
+                <div id="final-steps" class="steps-container"></div>
+                <button class="add-step-btn" onclick="addFinalStep()">Add Step</button>
+            </div>
+        </div>
+
+        <div id="system" class="tab-content">
+            <div class="tab-header">
+                <h2>System Settings</h2>
+            </div>
+            <div class="form-section">
+                <h3>Allowed Sources</h3>
+                <div class="input-group">
+                    <div class="cors-input-group">
+                        <input type="text" id="cors-input" placeholder="Enter allowed source (e.g., http://example.com)">
+                        <button class="add-btn" onclick="addCorsSource()">ADD</button>
+                    </div>
+                    <div id="cors-list" class="source-list"></div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <h3>Logging Configuration</h3>
+                <div class="input-group">
+                    <label>Log Level:</label>
+                    <select id="log-level">
+                        <option value="DEBUG">DEBUG</option>
+                        <option value="INFO" selected>INFO</option>
+                        <option value="WARNING">WARNING</option>
+                        <option value="ERROR">ERROR</option>
+                    </select>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <h3>API Configuration</h3>
+                <div class="input-group">
+                    <label>API Key:</label>
+                    <input type="password" id="api-key" value="123456">
+                </div>
+                <div class="input-group">
+                    <label>Request Timeout (ms):</label>
+                    <input type="number" id="request-timeout" value="30000" min="1000" step="1000">
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

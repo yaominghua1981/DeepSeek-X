@@ -1,0 +1,57 @@
+[project]
+name = "deepseek-x"
+version = "0.1.0"
+description = "DeepSeek-X 智能代理系统，结合DeepSeek的推理能力和Gemini的总结能力"
+authors = [
+    {name = "DeepSeek-X Team"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "fastapi>=0.101.0",
+    "uvicorn>=0.23.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.24.0",
+    "python-dotenv>=1.0.0",
+    "aiohttp>=3.8.0",
+    "asyncio>=3.4.3",
+    "sse-starlette>=1.6.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["clients", "chatters", "config", "process", "workflow", "utils"]
+
+[tool.pytest]
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/DeepSeek-X"
+"Bug Tracker" = "https://github.com/yourusername/DeepSeek-X/issues"
