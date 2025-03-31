@@ -25,6 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // If no token, show welcome screen
         showWelcome();
     }
+
+    // 为系统设置添加事件监听器
+    document.getElementById("log-level").addEventListener("change", collectAllData);
+    document.getElementById("api-key").addEventListener("change", collectAllData);
+    document.getElementById("request-timeout").addEventListener("change", collectAllData);
+    document.getElementById("proxy-address").addEventListener("change", collectAllData);
+    document.getElementById("proxy-toggle").addEventListener("change", collectAllData);
 });
 
 /**********************
@@ -399,13 +406,15 @@ function generateDefaultAlias(type) {
  **********************/
 function addModel(type) {
     const container = document.getElementById(`${type}-models`);
-    const modelId = `model-${type}-${Date.now()}`;
+    if (!container) {
+        console.error(`${type} models container not found`);
+        return;
+    }
     
+    const modelId = generateId();
     const modelSection = document.createElement('div');
     modelSection.className = 'model-section';
-    modelSection.id = modelId;
     
-    // Use different template for composite models
     if (type === 'composite') {
         const html = `
         <div class="model-section" id="${modelId}">
@@ -415,27 +424,35 @@ function addModel(type) {
                     placeholder="Model Alias"
                     class="model-alias" 
                     value="${generateDefaultAlias(type)}"
+                    onchange="collectAllData()"
                 >
                 <div class="model-actions">
                     <button onclick="deleteModel('${modelId}')">Delete</button>
-                    <label class="toggle-switch model-activate-toggle">
-                        <input type="checkbox" class="model-activate-checkbox" onchange="toggleCompositeModelActivation('${modelId}', this.checked)">
-                        <span class="slider"></span>
-                    </label>
                 </div>
             </div>
             <div class="model-content">
                 <div class="field-group">
                     <label>Model ID:</label>
-                    <input type="text" placeholder="Model ID" value="${generateDefaultAlias(type).replace(/\s+/g, '-').toLowerCase()}">
+                    <input type="text" placeholder="Model ID" onchange="collectAllData()">
                 </div>
                 <div class="field-group">
                     <label>Inference Model:</label>
-                    ${createModelSelect('inference', '')}
+                    <select class="model-select" onchange="collectAllData()">
+                        <option value="">Select Inference Model</option>
+                    </select>
                 </div>
                 <div class="field-group">
                     <label>Target Model:</label>
-                    ${createModelSelect('target', '')}
+                    <select class="model-select" onchange="collectAllData()">
+                        <option value="">Select Target Model</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="switch-label">Activated:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="collectAllData()">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -451,6 +468,7 @@ function addModel(type) {
                     placeholder="Model Alias"
                     class="model-alias" 
                     value="${generateDefaultAlias(type)}"
+                    onchange="collectAllData()"
                 >
                 <div class="model-actions">
                     <button onclick="deleteModel('${modelId}')">Delete</button>
@@ -464,6 +482,7 @@ function addModel(type) {
                             type="${f === 'API Key' ? 'password' : 'text'}" 
                             placeholder="${f}"
                             class="${f === 'API Key' ? 'api-key-field' : ''}" 
+                            onchange="collectAllData()"
                         >
                     </div>
                 `).join("")}
@@ -531,6 +550,7 @@ function createModelItem(type, model, alias) {
                     placeholder="Model Alias"
                     class="model-alias" 
                     value="${alias || ''}"
+                    onchange="collectAllData()"
                 >
                 <div class="model-actions">
                     <button class="delete-btn" onclick="deleteModel('${modelId}')">Delete</button>
@@ -566,6 +586,7 @@ function createFieldInput(type, fieldName, value) {
             class="${fieldName === 'API Key' ? 'api-key-field' : ''}"
             placeholder="${fieldName}"
             value="${value || ''}"
+            onchange="collectAllData()"
         >
     `;
 }
@@ -579,7 +600,7 @@ function createModelSelect(modelType, selectedValue) {
     
     return `
         <div class="select-wrapper">
-            <select class="model-select" data-model-type="${modelType}" onchange="updateModelInfoTooltip(this)">
+            <select class="model-select" data-model-type="${modelType}" onchange="collectAllData(); updateModelInfoTooltip(this)">
                 <option value="">-- Please Select --</option>
                 ${options.join('')}
             </select>
