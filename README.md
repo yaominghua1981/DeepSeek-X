@@ -21,12 +21,14 @@ DeepSeek-X is an innovative AI agent system that cleverly combines DeepSeek's de
 - **Flexible Configuration System**: Customize models, API keys, and proxy settings through a simple configuration file to meet different usage scenarios
 - **User-Friendly Interface**: Provides an intuitive web interface for interaction and configuration management
 - **Compatible Standard API**: Offers OpenAI-style compatible API interfaces for easy integration into existing systems
+- **Docker Support**: Supports containerized deployment with Docker and Docker Compose
 
 ## Requirements
 
-- Python 3.8 or higher
+- Python 3.11 or higher
 - Network connection (for accessing DeepSeek and Gemini API services)
 - Valid API keys (requires API keys from DeepSeek and Google AI Studio)
+- Docker and Docker Compose (for containerized deployment)
 
 ## Installation
 
@@ -95,6 +97,26 @@ pip install uv
 uv sync
 ```
 
+### Docker Deployment
+
+1. Build and run using Docker Compose:
+```bash
+# Build and start the container
+docker-compose up --build
+
+# To run in detached mode
+docker-compose up -d --build
+
+# To stop the container
+docker-compose down
+```
+
+2. The application will be available at `http://localhost:8000`
+
+3. Proxy Configuration:
+   - If you're using a proxy, configure it in the web interface or `config.json`
+   - The system will automatically handle the proxy address conversion between local and Docker environments
+   - For example, if your proxy is configured as `127.0.0.1:8118`, it will be automatically converted to `host.docker.internal:8118` when running in Docker
 
 ## Configuration
 ### Web Interface

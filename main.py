@@ -30,7 +30,7 @@ config_manager = ConfigManager()
 
 # Validate proxy configuration
 proxy_config = config_manager.get_proxy_config()
-if proxy_config.get("true"):
+if proxy_config.get("enabled"):
     proxy_address = proxy_config.get("address", "")
     logger.info(f"Proxy: http://{proxy_address}")
 else:

@@ -1,49 +1,49 @@
 [project]
 name = "deepseek-x"
 version = "0.1.0"
-description = "DeepSeek-X 智能代理系统，结合DeepSeek的推理能力和Gemini的总结能力"
+description = "DeepSeek X - A powerful AI assistant"
 authors = [
-    {name = "DeepSeek-X Team"}
+    { name = "Minghua YAO", email = "minghuayao1981@gmail.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 dependencies = [
-    "fastapi>=0.101.0",
-    "uvicorn>=0.23.0",
-    "pydantic>=2.0.0",
-    "httpx>=0.24.0",
-    "python-dotenv>=1.0.0",
-    "aiohttp>=3.8.0",
-    "asyncio>=3.4.3",
-    "sse-starlette>=1.6.0"
+    "fastapi>=0.109.2",
+    "uvicorn>=0.27.1",
+    "pydantic>=2.6.1",
+    "httpx>=0.26.0",
+    "python-dotenv>=1.0.1",
+    "aiohttp>=3.9.3",
+    "sse-starlette>=1.8.2",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
+    "pytest>=7.4.0",
     "black>=23.0.0",
     "isort>=5.12.0",
-    "mypy>=1.0.0"
+    "flake8>=6.0.0",
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
-[tool.hatch.build.targets.wheel]
-packages = ["clients", "chatters", "config", "process", "workflow", "utils"]
-
-[tool.pytest]
-testpaths = ["tests"]
+[tool.setuptools]
+packages = ["deepseek_x"]
 
 [tool.black]
-line-length = 88
-target-version = ["py38"]
+line-length = 100
+target-version = ["py311"]
 
 [tool.isort]
 profile = "black"
-line_length = 88
+line_length = 100
+multi_line_output = 3
+
+[tool.pytest]
+testpaths = ["tests"]
 
 [tool.mypy]
 python_version = "3.8"
@@ -53,5 +53,5 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/DeepSeek-X"
-"Bug Tracker" = "https://github.com/yourusername/DeepSeek-X/issues"
+"Homepage" = "https://github.com/yaominghua1981/DeepSeek-X"
+"Bug Tracker" = "https://github.com/yaominghua1981/DeepSeek-X/issues"

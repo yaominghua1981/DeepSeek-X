@@ -305,7 +305,24 @@ class ConfigManager:
     
     def get_proxy_config(self) -> Dict[str, Any]:
         """Get the proxy configuration"""
-        return self.config.get("proxy", {"enabled": False, "address": ""})
+        proxy_config = self.config.get("proxy", {"enabled": False, "address": ""})
+        
+        # Check if running in Docker environment
+        is_docker = os.getenv('DOCKER_CONTAINER', 'false').lower() == 'true'
+        
+        # If proxy is enabled, adjust the address based on environment
+        if proxy_config.get("enabled"):
+            original_address = proxy_config.get("address", "")
+            if is_docker and original_address:
+                # In Docker environment, use host.docker.internal
+                proxy_config["address"] = f"host.docker.internal:{original_address.split(':')[-1]}"
+                self.logger.info(f"Running in Docker environment, converting proxy address from {original_address} to {proxy_config['address']}")
+            else:
+                # In local environment, use original address
+                proxy_config["address"] = original_address
+                self.logger.info(f"Running in local environment, using proxy address: {original_address}")
+            
+        return proxy_config
     
     def get_proxy_address(self) -> str:
         """

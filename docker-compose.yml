@@ -1,0 +1,20 @@
+services:
+  deepseek-x:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deepseek-x:latest
+    container_name: deepseek-x
+    # Configure proxy settings to use host machine's proxy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - HTTP_PROXY=http://host.docker.internal:8118
+      - HTTPS_PROXY=http://host.docker.internal:8118
+      - NO_PROXY=localhost,127.0.0.1
+      - DOCKER_CONTAINER=true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config.json:/app/config.json
+    restart: always 
