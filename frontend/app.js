@@ -529,21 +529,8 @@ function createModelItem(type, model, alias) {
     const modelId = generateId();
     const safeModel = model || {}; // Prevent model from being null/undefined
     
-    // Only add activation toggle for composite models
-    const isComposite = type === 'composite';
-    const isActivated = isComposite ? (safeModel['activated'] === true) : false;
-    
-    // Add activation toggle button (only for composite models)
-    const activateToggle = isComposite ? `
-        <label class="toggle-switch model-activate-toggle">
-            <input type="checkbox" class="model-activate-checkbox" ${isActivated ? 'checked' : ''} 
-                   onchange="toggleCompositeModelActivation('${modelId}', this.checked)">
-            <span class="slider"></span>
-        </label>
-    ` : '';
-    
     return `
-        <div class="model-section ${isActivated ? 'model-activated' : ''}" id="${modelId}" data-model-alias="${alias || ''}">
+        <div class="model-section" id="${modelId}" data-model-alias="${alias || ''}">
             <div class="model-header">
                 <input 
                     type="text" 
@@ -554,7 +541,6 @@ function createModelItem(type, model, alias) {
                 >
                 <div class="model-actions">
                     <button class="delete-btn" onclick="deleteModel('${modelId}')">Delete</button>
-                    ${activateToggle}
                 </div>
             </div>
             <div class="model-content">
@@ -572,10 +558,9 @@ function createModelItem(type, model, alias) {
 function createFieldInput(type, fieldName, value) {
     // Create dropdown menus for specific fields in composite models
     if (type === 'composite') {
-        if (fieldName === 'Inference Model') {
-            return createModelSelect('inference', value);
-        } else if (fieldName === 'Target Model') {
-            return createModelSelect('target', value);
+        if (fieldName === 'Inference Model' || fieldName === 'Target Model') {
+            const modelType = fieldName === 'Inference Model' ? 'inference' : 'target';
+            return createModelSelect(modelType, value);
         }
     }
     
