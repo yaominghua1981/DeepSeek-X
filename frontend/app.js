@@ -52,6 +52,13 @@ function showToast(message, type = 'success') {
         document.body.appendChild(container);
     }
 
+    // Clear any existing toast notifications
+    container.innerHTML = '';
+    if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+    }
+
     // Create toast element
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -74,11 +81,6 @@ function showToast(message, type = 'success') {
         hideToast(toast);
     });
 
-    // Clear any existing timeout
-    if (toastTimeout) {
-        clearTimeout(toastTimeout);
-    }
-
     // Auto hide after 1 second
     toastTimeout = setTimeout(() => {
         hideToast(toast);
@@ -88,17 +90,36 @@ function showToast(message, type = 'success') {
 function hideToast(toast) {
     if (!toast) return;
     
+    // Remove show class to trigger fade out animation
     toast.classList.remove('show');
-    setTimeout(() => {
+    
+    // Use a more reliable way to remove the element after animation
+    const removeToast = () => {
         if (toast && toast.parentNode) {
             toast.parentNode.removeChild(toast);
         }
-    }, 300);
+    };
+    
+    // Use requestAnimationFrame for more reliable timing
+    requestAnimationFrame(() => {
+        setTimeout(removeToast, 300);
+    });
 }
 
 async function saveConfig() {
     try {
         console.log("Starting to save configuration...");
+        
+        // Clear any existing toast notifications
+        const container = document.querySelector('.toast-container');
+        if (container) {
+            container.innerHTML = '';
+        }
+        if (toastTimeout) {
+            clearTimeout(toastTimeout);
+            toastTimeout = null;
+        }
+        
         let response;
         try {
             // Try main endpoint
@@ -372,7 +393,7 @@ function collectModelData(type) {
                     const select = section.querySelector(`select[data-model-type="${field === 'Inference Model' ? 'inference' : 'target'}"]`);
                     modelData[field] = select ? select.value : '';
                 } else if (field === 'activated') {
-                    // Get activation status
+                    // Get activation status from checkbox
                     const activateCheckbox = section.querySelector('.model-activate-checkbox');
                     modelData[field] = activateCheckbox ? activateCheckbox.checked : false;
                 } else {
@@ -427,6 +448,10 @@ function addModel(type) {
                     onchange="collectAllData()"
                 >
                 <div class="model-actions">
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="model-activate-checkbox" onchange="toggleCompositeModelActivation('${modelId}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
                     <button onclick="deleteModel('${modelId}')">Delete</button>
                 </div>
             </div>
@@ -437,22 +462,15 @@ function addModel(type) {
                 </div>
                 <div class="field-group">
                     <label>Inference Model:</label>
-                    <select class="model-select" onchange="collectAllData()">
+                    <select class="model-select" data-model-type="inference" onchange="collectAllData(); updateModelInfoTooltip(this)">
                         <option value="">Select Inference Model</option>
                     </select>
                 </div>
                 <div class="field-group">
                     <label>Target Model:</label>
-                    <select class="model-select" onchange="collectAllData()">
+                    <select class="model-select" data-model-type="target" onchange="collectAllData(); updateModelInfoTooltip(this)">
                         <option value="">Select Target Model</option>
                     </select>
-                </div>
-                <div class="field-group">
-                    <label class="switch-label">Activated:</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" onchange="collectAllData()">
-                        <span class="slider"></span>
-                    </label>
                 </div>
             </div>
         </div>
@@ -493,6 +511,19 @@ function addModel(type) {
     }
     
     container.appendChild(modelSection);
+    // Update dropdown options for the new model
+    if (type === 'composite') {
+        const modelElement = document.getElementById(modelId);
+        const inferenceSelect = modelElement.querySelector('select[data-model-type="inference"]');
+        const targetSelect = modelElement.querySelector('select[data-model-type="target"]');
+        
+        if (inferenceSelect) {
+            updateModelSelectOptions(inferenceSelect, 'inference');
+        }
+        if (targetSelect) {
+            updateModelSelectOptions(targetSelect, 'target');
+        }
+    }
     // Save configuration immediately
     collectAllData();
 }
@@ -540,6 +571,12 @@ function createModelItem(type, model, alias) {
                     onchange="collectAllData()"
                 >
                 <div class="model-actions">
+                    ${type === 'composite' ? `
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="model-activate-checkbox" ${safeModel.activated ? 'checked' : ''} onchange="toggleCompositeModelActivation('${modelId}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    ` : ''}
                     <button class="delete-btn" onclick="deleteModel('${modelId}')">Delete</button>
                 </div>
             </div>
@@ -637,11 +674,9 @@ function toggleCompositeModelActivation(modelId, isActivated) {
     const modelSection = document.getElementById(modelId);
     if (!modelSection) return;
     
-    // Update UI status
+    // If activating this model, deactivate all others
     if (isActivated) {
-        modelSection.classList.add('model-activated');
-        
-        // Deactivate all other composite models
+        // Deactivate all other models
         document.querySelectorAll('#composite-models .model-section').forEach(section => {
             if (section.id !== modelId) {
                 section.classList.remove('model-activated');
@@ -649,8 +684,16 @@ function toggleCompositeModelActivation(modelId, isActivated) {
                 if (checkbox) checkbox.checked = false;
             }
         });
+        
+        // Activate this model
+        modelSection.classList.add('model-activated');
+        const checkbox = modelSection.querySelector('.model-activate-checkbox');
+        if (checkbox) checkbox.checked = true;
     } else {
+        // Just deactivate this model
         modelSection.classList.remove('model-activated');
+        const checkbox = modelSection.querySelector('.model-activate-checkbox');
+        if (checkbox) checkbox.checked = false;
     }
     
     // Save configuration immediately
