@@ -25,8 +25,8 @@ DeepSeek-X is an innovative AI agent system that cleverly combines DeepSeek's de
 
 
 ## Tutorial (Video in Chinese)
-Part1: https://weixin.qq.com/sph/AfGABEeRU
-Part2: https://weixin.qq.com/sph/AZ4jNoXfq
+Part1: https://weixin.qq.com/sph/AfGABEeRU <br>
+Part2: https://weixin.qq.com/sph/AZ4jNoXfq <br>
 Part3: https://weixin.qq.com/sph/A6IuJPoXv
 
 ## Requirements
