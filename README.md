@@ -23,6 +23,12 @@ DeepSeek-X is an innovative AI agent system that cleverly combines DeepSeek's de
 - **Compatible Standard API**: Offers OpenAI-style compatible API interfaces for easy integration into existing systems
 - **Docker Support**: Supports containerized deployment with Docker and Docker Compose
 
+
+## Tutorial (Video in Chinese)
+Part1: https://weixin.qq.com/sph/AfGABEeRU
+Part2: https://weixin.qq.com/sph/AZ4jNoXfq
+Part3: https://weixin.qq.com/sph/A6IuJPoXv
+
 ## Requirements
 
 - Python 3.11 or higher
