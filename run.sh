@@ -10,8 +10,20 @@ fi
 
 # Check if config file exists
 if [ ! -f "config.json" ]; then
-    echo "Error: config.json file not found. Please run setup.sh or create the configuration file manually."
-    exit 1
+    if [ -f "config_example.json" ]; then
+        echo "config.json file not found, but config_example.json exists."
+        echo "Would you like to run setup.sh to create the configuration file now? (y/n)"
+        read -r choice
+        if [[ "$choice" =~ ^[Yy]$ ]]; then
+            ./setup.sh
+        else
+            echo "Please run setup.sh manually to create the configuration file before starting the service."
+            exit 1
+        fi
+    else
+        echo "Error: Neither config.json nor config_example.json found. Cannot create configuration."
+        exit 1
+    fi
 fi
 
 # Activate virtual environment

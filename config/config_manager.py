@@ -20,8 +20,8 @@ class ConfigManager:
             config_path: Path to the config.json file (default: "config.json")
         """
         self.config_path = config_path
-        self.config = self._parse_config_file()
         self.logger = get_logger("ConfigManager")
+        self.config = self._parse_config_file()
         # Callback functions
         self.callbacks = {}
     
@@ -132,20 +132,35 @@ class ConfigManager:
     
     def _parse_config_file(self) -> Dict[str, Any]:
         """
-        Parse the configuration file and return its contents
+        Parse the configuration file and return its contents.
+        If config.json doesn't exist, create it from config_example.json.
         
         Returns:
             Dictionary containing the configuration
         """
         try:
+            # Check if config.json exists
             if not os.path.exists(self.config_path):
-                raise FileNotFoundError(f"Config file not found: {self.config_path}")
+                # Check if config_example.json exists
+                example_config_path = "config_example.json"
+                if os.path.exists(example_config_path):
+                    self.logger.info(f"Config file not found: {self.config_path}, creating from {example_config_path}")
+                    # Copy example config to create config.json
+                    import shutil
+                    shutil.copy2(example_config_path, self.config_path)
+                    self.logger.info(f"Created {self.config_path} from {example_config_path}")
+                else:
+                    self.logger.error(f"Neither {self.config_path} nor {example_config_path} found")
+                    raise FileNotFoundError(f"Config files not found: {self.config_path} and {example_config_path}")
             
+            # Load the configuration file
             with open(self.config_path, 'r', encoding='utf-8') as file:
                 return json.load(file)
         except json.JSONDecodeError as e:
+            self.logger.error(f"Invalid JSON in config file: {str(e)}")
             raise ValueError(f"Invalid JSON in config file: {str(e)}")
         except Exception as e:
+            self.logger.error(f"Error loading config: {str(e)}")
             raise Exception(f"Error loading config: {str(e)}")
     
     def load_config(self) -> Dict[str, Any]:

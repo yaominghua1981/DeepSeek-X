@@ -1,46 +1,21 @@
 #!/bin/bash
 
-echo "=== DeepSeek-X Installation Script ==="
-echo "Setting up development environment..."
+echo "=== DeepSeek-X Setup ==="
+echo "Initializing configuration..."
 
-# Check Python version
-python_version=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-required_version="3.8"
-
-if [ "$(printf '%s\n' "$required_version" "$python_version" | sort -V | head -n1)" != "$required_version" ]; then
-    echo "Error: Python 3.8 or higher is required, current version: $python_version"
-    exit 1
+if [ -f "config.json" ]; then
+    echo "Configuration file already exists."
+else
+    if [ -f "config_example.json" ]; then
+        echo "Creating config.json from config_example.json template"
+        cp config_example.json config.json
+        echo "Configuration file created. Please edit config.json to configure your API keys."
+    else
+        echo "Error: config_example.json not found. Cannot create configuration file."
+        exit 1
+    fi
 fi
 
-echo "Python version check passed: $python_version"
-
-# Create virtual environment
-echo "Creating virtual environment..."
-python3 -m venv venv
-source venv/bin/activate
-
-# Upgrade pip
-echo "Upgrading pip..."
-pip install --upgrade pip
-
-# Install core dependencies
-echo "Installing core dependencies..."
-pip install fastapi uvicorn pydantic httpx python-dotenv aiohttp sse-starlette
-
-# If pyproject.toml exists, use pip to install dependencies
-if [ -f "pyproject.toml" ]; then
-    echo "Detected pyproject.toml, installing project dependencies with pip..."
-    pip install -e .
-fi
-
-# Create config file (if it doesn't exist)
-if [ ! -f "config.json" ] && [ -f "config.example.json" ]; then
-    echo "Creating configuration file..."
-    cp config.example.json config.json
-    echo "Please edit config.json file to set your API keys and other configuration options"
-fi
-
-echo "Installation complete!"
-echo "Use the following commands to activate the environment and run the application:"
-echo "  source venv/bin/activate"
-echo "  ./run.sh" 
+echo "Setup complete."
+echo "Please verify and update your API keys in config.json before running the service."
+echo "You can start the service by running: ./run.sh" 
