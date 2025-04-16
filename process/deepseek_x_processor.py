@@ -59,8 +59,32 @@ class DeepSeekXProcessor:
             try:
                 composite_config = config_manager.get_active_config_for_chat_manager()
                 logger.info(f"Model: {composite_config.get('deepseek_model', '')}->{composite_config.get('openai_compatible_model', '')}")
+                
+                # Validate API keys
+                inference_api_key = composite_config.get('deepseek_api_key', '')
+                target_api_key = composite_config.get('openai_compatible_api_key', '')
+                
+                # Check for missing or placeholder API keys
+                if not inference_api_key or inference_api_key in ["YOUR_INFERENCE_API_KEY_HERE"]:
+                    logger.error("Missing or invalid Inference Model API key")
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail={"error": "Missing or invalid Inference Model API key. Please configure your inference model API key in the settings."}
+                    )
+                
+                if not target_api_key or target_api_key in ["YOUR_GEMINI_API_KEY_HERE", "YOUR_SYSTEM_API_KEY_HERE"]:
+                    logger.error("Missing or invalid Target Model API key")
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail={"error": "Missing or invalid Target Model API key. Please configure your target model API key in the settings."}
+                    )
+                
             except ValueError as e:
                 logger.error(f"Configuration error: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail={"error": f"Configuration error: {str(e)}. Please check your model configuration."}
+                )
             
             # Create combinator instance
             combinator = DeepSeekOpenAICompatibleCombinator(
@@ -89,11 +113,19 @@ class DeepSeekXProcessor:
                         model_id=model_id
                     )
             except Exception as e:
-                logger.error(f"Workflow error: {str(e)}")
+                error_message = str(e)
+                if "API key" in error_message.lower() or "authentication" in error_message.lower() or "authorization" in error_message.lower():
+                    logger.error(f"API authentication error: {error_message}")
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail={"error": f"API authentication failed: {error_message}. Please check your API keys in configuration."}
+                    )
+                
+                logger.error(f"Workflow error: {error_message}")
                 logger.error(traceback.format_exc())
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail={"error": f"Workflow failed: {str(e)}"}
+                    detail={"error": f"Workflow failed: {error_message}"}
                 )
                 
         except HTTPException:

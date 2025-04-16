@@ -284,6 +284,9 @@ async function loadConfigToUI() {
         // Initialize model selector hover info
         setTimeout(initializeModelSelects, 500);
         
+        // Check for missing or invalid API keys and show warnings
+        setTimeout(checkApiKeysOnLoad, 1000);
+        
         console.log("UI updated successfully with configuration");
         return true;
     } catch (error) {
@@ -595,6 +598,32 @@ function createFieldInput(type, fieldName, value) {
             const modelType = fieldName === 'Inference Model' ? 'inference' : 'target';
             return createModelSelect(modelType, value);
         }
+    }
+    
+    // Add warnings for API Keys
+    if (fieldName === 'API Key') {
+        const placeholderText = type === 'inference' ? 
+            'Enter your Inference Model API Key' : 
+            'Enter your Target Model API Key';
+        
+        const isEmpty = !value || value === 'YOUR_INFERENCE_API_KEY_HERE' || 
+                        value === 'YOUR_TARGET_API_KEY_HERE';
+        
+        return `
+            <div class="${isEmpty ? 'field-group warning' : 'field-group'}">
+                <input 
+                    type="password"
+                    class="api-key-field"
+                    placeholder="${placeholderText}"
+                    value="${value || ''}"
+                    onchange="collectAllData(); validateApiKey(this, '${type}')"
+                    data-model-type="${type}"
+                >
+                <div class="api-key-warning ${isEmpty ? 'visible' : ''}">
+                    Please enter a valid API key for this model
+                </div>
+            </div>
+        `;
     }
     
     // Use default input for other fields
@@ -1045,4 +1074,115 @@ function showError(message) {
 
 function showSuccess(message) {
     showToast(message, 'success');
+}
+
+// API Key validation
+function validateApiKey(inputElement, modelType) {
+    const value = inputElement.value.trim();
+    const fieldGroup = inputElement.closest('.field-group');
+    const warningElement = fieldGroup.querySelector('.api-key-warning');
+    
+    const isEmpty = !value || 
+                   value === 'YOUR_INFERENCE_API_KEY_HERE' || 
+                   value === 'YOUR_TARGET_API_KEY_HERE';
+    
+    if (isEmpty) {
+        fieldGroup.classList.add('warning');
+        warningElement.classList.add('visible');
+        
+        // Show banner notification for the model type
+        showApiKeyBanner(modelType);
+    } else {
+        fieldGroup.classList.remove('warning');
+        warningElement.classList.remove('visible');
+        
+        // Check if all API keys of this type are valid
+        checkAllApiKeysValid(modelType);
+    }
+}
+
+// Check if all API keys of a specific type are valid
+function checkAllApiKeysValid(modelType) {
+    const container = document.getElementById(`${modelType}-models`);
+    if (!container) return;
+    
+    const warnings = container.querySelectorAll('.api-key-warning.visible');
+    if (warnings.length === 0) {
+        // All API keys are valid, hide banner
+        hideApiKeyBanner(modelType);
+    }
+}
+
+// Show banner notification for missing API keys
+function showApiKeyBanner(modelType) {
+    let bannerId;
+    let message;
+    
+    if (modelType === 'inference') {
+        bannerId = 'inference-api-banner';
+        message = 'One or more Inference Models are missing valid API keys. Please enter your inference model API keys to enable proper functionality.';
+    } else if (modelType === 'target') {
+        bannerId = 'target-api-banner';
+        message = 'One or more Target Models are missing valid API keys. Please enter your target model API keys to enable proper functionality.';
+    } else {
+        return;
+    }
+    
+    // Check if banner already exists
+    let banner = document.getElementById(bannerId);
+    if (!banner) {
+        // Create banner element
+        banner = document.createElement('div');
+        banner.id = bannerId;
+        banner.className = 'api-key-banner';
+        banner.innerHTML = `
+            <span class="banner-icon">⚠️</span>
+            <span class="banner-message">${message}</span>
+            <button class="banner-close" onclick="dismissBanner('${bannerId}')">&times;</button>
+        `;
+        
+        // Insert banner at top of corresponding tab
+        const tabContent = document.getElementById(modelType);
+        if (tabContent) {
+            const tabHeader = tabContent.querySelector('.tab-header');
+            tabContent.insertBefore(banner, tabHeader);
+        }
+    }
+    
+    // Show banner
+    banner.classList.add('visible');
+}
+
+// Hide API key banner for a specific model type
+function hideApiKeyBanner(modelType) {
+    const bannerId = modelType === 'inference' ? 'inference-api-banner' : 'target-api-banner';
+    const banner = document.getElementById(bannerId);
+    if (banner) {
+        banner.classList.remove('visible');
+    }
+}
+
+// Dismiss banner when close button is clicked
+function dismissBanner(bannerId) {
+    const banner = document.getElementById(bannerId);
+    if (banner) {
+        banner.classList.remove('visible');
+    }
+}
+
+// Check API keys on initial load
+function checkApiKeysOnLoad() {
+    // Check inference model API keys
+    const inferenceContainer = document.getElementById('inference-models');
+    if (inferenceContainer) {
+        const inferenceApiInputs = inferenceContainer.querySelectorAll('input.api-key-field');
+        inferenceApiInputs.forEach(input => validateApiKey(input, 'inference'));
+    }
+    
+    // Check target model API keys
+    const targetContainer = document.getElementById('target-models');
+    if (targetContainer) {
+        const targetApiInputs = targetContainer.querySelectorAll('input.api-key-field');
+        targetApiInputs.forEach(input => validateApiKey(input, 'target'));
+    }
 }
