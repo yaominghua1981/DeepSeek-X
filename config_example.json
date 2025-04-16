@@ -1,0 +1,108 @@
+{
+  "composite": {
+    "DeepSeekSiliconFlowR1-Gemini": {
+      "Inference Model": "DeepSeekR1-SiliconFlow",
+      "Target Model": "Gemini2.0Pro",
+      "activated": false
+    },
+    "DeepSeek-Gemini": {
+      "Inference Model": "DeepSeek",
+      "Target Model": "Gemini2.0Pro",
+      "activated": false
+    },
+    "DeepSeek-Gemini2.5": {
+      "Inference Model": "DeepSeekR1-SiliconFlow",
+      "Target Model": "Gemini2.5proexp0325",
+      "activated": true
+    },
+    "DeepSeekSiliconFlowV3-Gemini2.5": {
+      "Inference Model": "DeepSeekV3-SiliconFlow",
+      "Target Model": "Gemini2.5proexp0325",
+      "activated": false
+    }
+  },
+  "inference": {
+    "DeepSeekR1-SiliconFlow": {
+      "Model ID": "deepseek-ai/DeepSeek-R1",
+      "API Key": "YOUR_INFERENCE_API_KEY_HERE",
+      "Base URL": "https://api.siliconflow.cn",
+      "API Path": "v1/chat/completions",
+      "Model Type": ""
+    },
+    "DeepSeek": {
+      "Model ID": "deepseek-chat",
+      "API Key": "YOUR_DEEPSEEK_API_KEY_HERE",
+      "Base URL": "https://api.deepseek.com",
+      "API Path": "chat/completions",
+      "Model Type": ""
+    },
+    "DeepSeekV3-SiliconFlow": {
+      "Model ID": "deepseek-ai/DeepSeek-V3",
+      "API Key": "YOUR_DEEPSEEKV3_API_KEY_HERE",
+      "Base URL": "https://api.siliconflow.cn",
+      "API Path": "v1/chat/completions",
+      "Model Type": ""
+    }
+  },
+  "target": {
+    "Gemini2.0Flash": {
+      "Model ID": "gemini-2.0-flash",
+      "API Key": "YOUR_GEMINI_API_KEY_HERE",
+      "Base URL": "https://generativelanguage.googleapis.com",
+      "API Path": "v1beta/openai/chat/completions",
+      "Model Type": "openai"
+    },
+    "Gemini2.0Pro": {
+      "Model ID": "gemini-2.0-pro-exp",
+      "API Key": "YOUR_GEMINI_API_KEY_HERE",
+      "Base URL": "https://generativelanguage.googleapis.com",
+      "API Path": "v1beta/openai/chat/completions",
+      "Model Type": "openai"
+    },
+    "Gemini2.5proexp0325": {
+      "Model ID": "gemini-2.5-pro-exp-03-25",
+      "API Key": "YOUR_GEMINI_API_KEY_HERE",
+      "Base URL": "https://generativelanguage.googleapis.com",
+      "API Path": "v1beta/openai/chat/completions",
+      "Model Type": "openai"
+    }
+  },
+  "proxy": {
+    "address": "127.0.0.1:8118",
+    "enabled": true
+  },
+  "system": {
+    "cors": [
+      "*"
+    ],
+    "logLevel": "DEBUG",
+    "apiKey": "123456",
+    "requestTimeout": 1800000
+  },
+  "workflow": {
+    "phase1_inference": {
+      "step": [
+        {
+          "stream": true,
+          "retry_num": 0
+        },
+        {
+          "stream": false,
+          "retry_num": 0
+        }
+      ]
+    },
+    "phase2_final": {
+      "step": [
+        {
+          "stream": true,
+          "retry_num": 0
+        },
+        {
+          "stream": false,
+          "retry_num": 0
+        }
+      ]
+    }
+  }
+}

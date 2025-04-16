@@ -1394,3 +1394,75 @@ select:focus {
 .toast .close:hover {
     opacity: 1;
 }
+
+/* API Key validation styling */
+.api-key-warning {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+    padding: 6px 10px;
+    background-color: #fceae9;
+    border-radius: 4px;
+    border-left: 3px solid #e74c3c;
+}
+
+.api-key-warning.visible {
+    display: block;
+}
+
+.field-group.warning input.api-key-field {
+    border-color: #e74c3c;
+    background-color: #fef5f5;
+}
+
+/* Warning icon for API keys */
+.field-group.warning label::after {
+    content: "⚠️";
+    margin-left: 5px;
+    color: #e74c3c;
+    font-size: 14px;
+}
+
+/* Banner notification for API key issues */
+.api-key-banner {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    display: none;
+}
+
+.api-key-banner.visible {
+    display: flex;
+}
+
+.api-key-banner .banner-icon {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.api-key-banner .banner-message {
+    flex-grow: 1;
+}
+
+.api-key-banner .banner-close {
+    background: none;
+    border: none;
+    color: #856404;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.api-key-banner .banner-close:hover {
+    color: #533f03;
+}
