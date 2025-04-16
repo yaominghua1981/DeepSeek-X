@@ -49,7 +49,11 @@ We provide simple scripts to help you quickly set up and run:
 git clone https://github.com/yaominghua1981/DeepSeek-X.git
 cd DeepSeek-X
 
-# Install dependencies
+# Option 1: Full installation with virtual environment and configuration
+chmod +x install.sh
+./install.sh
+
+# Option 2: Configure only (if you've already set up your environment)
 chmod +x setup.sh
 ./setup.sh
 
@@ -65,7 +69,10 @@ chmod +x run.sh
 git clone https://github.com/yaominghua1981/DeepSeek-X.git
 cd DeepSeek-X
 
-# Install dependencies
+# Option 1: Full installation with virtual environment and configuration
+install.bat
+
+# Option 2: Configure only (if you've already set up your environment)
 setup.bat
 
 # Run service
@@ -147,6 +154,31 @@ docker-compose down
   <img src="./assets/workflow.png" alt="login" width="800" />
 </div>
 
+### Configuration System
+
+DeepSeek-X uses a flexible configuration system that makes it easy to set up and customize:
+
+1. **First-time Setup**:
+   - The system uses `config_example.json` as a template
+   - When you run `setup.sh` or start the application for the first time, it automatically creates a `config.json` file if it doesn't exist
+   - The `config.json` file contains your personal API keys and settings and is excluded from Git
+
+2. **Configuration File Structure**:
+   - `composite`: Configurations for model combinations (DeepSeek + Gemini/Claude)
+   - `inference`: Configurations for inference models (DeepSeek)
+   - `target`: Configurations for target models (Gemini/Claude)
+   - `proxy`: Proxy settings for API access
+   - `system`: System-wide settings like CORS, logging level, and request timeout
+   - `workflow`: Workflow configurations for the two-phase processing
+
+3. **API Keys**:
+   - You'll need to add your own API keys in the `config.json` file
+   - For DeepSeek: Get your API key from [DeepSeek Platform](https://platform.deepseek.com)
+   - For Gemini: Get your API key from [Google AI Studio](https://ai.google.dev/)
+
+4. **Platform-Specific Notes**:
+   - **Windows**: The batch scripts (`setup.bat`, `install.bat`, `run.bat`) provide the same functionality as their shell script counterparts
+   - **Docker**: When running in Docker, proxy addresses are automatically converted (e.g., `127.0.0.1:8118` becomes `host.docker.internal:8118`)
 
 ## Running in Production
 
