@@ -127,11 +127,7 @@ class DeepSeekXProcessor:
         
         # Convert each composite model to OpenAI API compatible format
         for alias, model_data in composite_models.items():
-            model_id = model_data.get("Model ID", "").lower()
-            
-            # If model ID is not explicitly set, use a normalized version of the alias
-            if not model_id:
-                model_id = alias.lower().replace(" ", "-")
+            model_id = "DeepSeek-X"
             
             # Inference model and target model information
             inference_model_alias = model_data.get("Inference Model", "")
@@ -142,7 +138,7 @@ class DeepSeekXProcessor:
                 "id": model_id,
                 "object": "model",
                 "created": int(time.time()),
-                "owned_by": "deepseek-x",
+                "owned_by": "DeepSeek-X",
                 "permission": [{
                     "id": f"modelperm-{model_id}",
                     "object": "model_permission",

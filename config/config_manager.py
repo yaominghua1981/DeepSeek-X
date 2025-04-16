@@ -215,11 +215,6 @@ class ConfigManager:
         if model_id in composite_models:
             return composite_models[model_id]
         
-        # Backward compatibility: check model ID field
-        for alias, model_data in composite_models.items():
-            if model_data.get("Model ID") == model_id:
-                return model_data
-        
         # If no match is found, try matching with normalized aliases
         normalized_id = model_id.lower().replace(" ", "-")
         for alias, model_data in composite_models.items():

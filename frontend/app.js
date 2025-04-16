@@ -359,7 +359,7 @@ async function collectAllData() {
 
 function getModelFields(type) {
     if (type === "composite") {
-        return ["Model ID", "Inference Model", "Target Model"]; // Changed field display order
+        return ["Inference Model", "Target Model"];
     } else if (type === "inference" || type === "target") {
         return ["Model ID", "API Key", "Base URL", "API Path", "Model Type"];
     }
@@ -456,10 +456,6 @@ function addModel(type) {
                 </div>
             </div>
             <div class="model-content">
-                <div class="field-group">
-                    <label>Model ID:</label>
-                    <input type="text" placeholder="Model ID" onchange="collectAllData()">
-                </div>
                 <div class="field-group">
                     <label>Inference Model:</label>
                     <select class="model-select" data-model-type="inference" onchange="collectAllData(); updateModelInfoTooltip(this)">
