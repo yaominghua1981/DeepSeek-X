@@ -865,6 +865,17 @@ async function login() {
             body: JSON.stringify({ token: document.getElementById("token").value })
         });
         
+        // Check if response is not ok (status code >= 400)
+        if (!response.ok) {
+            const errorData = await response.json();
+            if (response.status === 401) {
+                alert("Login failed: Invalid password. Please check your password and try again.");
+            } else {
+                alert("Login failed: " + (errorData.detail?.error || "Unknown error"));
+            }
+            return;
+        }
+        
         const result = await response.json();
         if (result.success) {
             // Save token for subsequent requests
