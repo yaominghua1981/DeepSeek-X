@@ -6,7 +6,7 @@ authors = [
     { name = "Minghua YAO", email = "minghuayao1981@gmail.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 license = {text = "MIT"}
 dependencies = [
     "fastapi>=0.109.2",
@@ -46,7 +46,7 @@ multi_line_output = 3
 testpaths = ["tests"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

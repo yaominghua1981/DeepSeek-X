@@ -4,11 +4,15 @@ echo "=== DeepSeek-X Installation Script ==="
 echo "Setting up development environment..."
 
 # Check Python version
-python_version=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-required_version="3.8"
+python_version=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+if [ $? -ne 0 ]; then
+    echo "Error: Python is not available. Please install Python 3.11 or higher."
+    exit 1
+fi
 
-if [ "$(printf '%s\n' "$required_version" "$python_version" | sort -V | head -n1)" != "$required_version" ]; then
-    echo "Error: Python 3.8 or higher is required, current version: $python_version"
+# Check if Python version is 3.11 or higher
+if [[ "$(printf '%s\n' "3.11" "$python_version" | sort -V | head -n1)" != "3.11" ]]; then
+    echo "Error: Python 3.11 or higher is required, current version: $python_version"
     exit 1
 fi
 
