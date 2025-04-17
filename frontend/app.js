@@ -109,6 +109,7 @@ function hideToast(toast) {
 async function saveConfig() {
     try {
         console.log("Starting to save configuration...");
+        console.log("Config to save:", JSON.stringify(config, null, 2));
         
         // Clear any existing toast notifications
         const container = document.querySelector('.toast-container');
@@ -404,9 +405,39 @@ function collectModelData(type) {
                     modelData[field] = input ? input.value.trim() : '';
                 }
             } else {
-                // Regular model field collection
-                const input = section.querySelector(`input[placeholder="${field}"]`);
-                modelData[field] = input ? input.value.trim() : '';
+                // First find the field group with the correct label
+                const labels = section.querySelectorAll('label');
+                let fieldGroup = null;
+                let fieldValue = '';
+                
+                for (const label of labels) {
+                    if (label.textContent === `${field}:`) {
+                        fieldGroup = label.closest('.field-group');
+                        break;
+                    }
+                }
+                
+                if (fieldGroup) {
+                    // Special handling for API Key fields which have different structure
+                    if (field === 'API Key') {
+                        const apiKeyInput = fieldGroup.querySelector('input.api-key-field');
+                        if (apiKeyInput) {
+                            fieldValue = apiKeyInput.value.trim();
+                        }
+                    }
+                    
+                    if (!fieldValue) {
+                        // Try regular input
+                        const input = fieldGroup.querySelector('input');
+                        fieldValue = input ? input.value.trim() : '';
+                    }
+                } else {
+                    // Fallback: try to find by placeholder
+                    const input = section.querySelector(`input[placeholder="${field}"]`);
+                    fieldValue = input ? input.value.trim() : '';
+                }
+                
+                modelData[field] = fieldValue;
             }
         });
         
@@ -414,6 +445,7 @@ function collectModelData(type) {
         models[alias] = modelData;
     });
     
+    console.log(`Collected ${type} model data:`, models);
     return models;
 }
 
@@ -607,7 +639,10 @@ function createFieldInput(type, fieldName, value) {
             'Enter your Target Model API Key';
         
         const isEmpty = !value || value === 'YOUR_INFERENCE_API_KEY_HERE' || 
-                        value === 'YOUR_TARGET_API_KEY_HERE';
+                        value === 'YOUR_TARGET_API_KEY_HERE' ||
+                        value === 'YOUR_DEEPSEEK_API_KEY_HERE' ||
+                        value === 'YOUR_DEEPSEEKV3_API_KEY_HERE' ||
+                        value === 'YOUR_GEMINI_API_KEY_HERE';
         
         return `
             <div class="${isEmpty ? 'field-group warning' : 'field-group'}">
@@ -1084,7 +1119,10 @@ function validateApiKey(inputElement, modelType) {
     
     const isEmpty = !value || 
                    value === 'YOUR_INFERENCE_API_KEY_HERE' || 
-                   value === 'YOUR_TARGET_API_KEY_HERE';
+                   value === 'YOUR_TARGET_API_KEY_HERE' ||
+                   value === 'YOUR_DEEPSEEK_API_KEY_HERE' ||
+                   value === 'YOUR_DEEPSEEKV3_API_KEY_HERE' ||
+                   value === 'YOUR_GEMINI_API_KEY_HERE';
     
     if (isEmpty) {
         fieldGroup.classList.add('warning');
